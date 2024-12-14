@@ -1,6 +1,6 @@
 package de.dafri.dwb.domain;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
-public record Event(String nr, LocalDateTime begin, LocalDateTime end, String place) {
+public record Event(String nr, Date begin, Date end, String place) {
 }

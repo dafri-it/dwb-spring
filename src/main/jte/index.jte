@@ -1,4 +1,5 @@
 @import de.dafri.dwb.view.CategoryTreeViewItem
+@import de.dafri.dwb.view.EventViewItem
 @import de.dafri.dwb.view.TopicListViewItem
 
 @param de.dafri.dwb.view.TopicView view
@@ -10,9 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Start</title>
 </head>
-<body>
-<aside style="float: left">
-    <h1>Tree</h1>
+<body style="display: flex">
+<aside>
     <ul>
         @for(CategoryTreeViewItem item: view.tree())
             <li><a href="/category/${item.nr()}">${item.name()}</a>
@@ -26,11 +26,16 @@
     </ul>
 </aside>
 <main>
-    <h1>Main</h1>
+    <h1>${view.category().name()}</h1>
     <ul>
         @for(TopicListViewItem topic: view.topics())
             <li>
                 <a href="/topic/${topic.nr()}">${topic.title()}</a>
+                <ul>
+                    @for(EventViewItem event : topic.events())
+                        <li>${event.begin().toString()} ${event.place()}</li>
+                    @endfor
+                </ul>
             </li>
         @endfor
     </ul>

@@ -1,6 +1,7 @@
 package de.dafri.dwb.data;
 
 import de.dafri.dwb.domain.Category;
+import de.dafri.dwb.domain.Event;
 import de.dafri.dwb.domain.Topic;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,35 @@ public class CategoryDto {
         this.categoryTree = new ArrayList<>();
     }
 
-    protected void init() {
+    public List<Category> getCategoryTree() {
+        if (categoryTree.isEmpty()) {
+            init();
+        }
+        return Collections.unmodifiableList(categoryTree);
+    }
+
+    public Category getCategoryByNr(String nr) {
+        for (Category category : categoryTree) {
+            if (category.nr().equals(nr)) {
+                return category;
+            }
+            for (Category child : category.children()) {
+                if (child.nr().equals(nr)) {
+                    return child;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public List<Topic> getTopics(Category category) {
+        return Collections.unmodifiableList(categoryTopicMap.getOrDefault(category, new ArrayList<>()));
+    }
+
+
+    // TODO refactor
+    void init() {
         List<CategoryModel> categoryModels = jdbcTemplate.query(
                 "SELECT ID, nr, name, description FROM rubrik",
                 (rs, rowNum) -> new CategoryModel(
@@ -73,10 +102,29 @@ public class CategoryDto {
             categoryTree.add(new Category(rootElement.id(), rootElement.nr(), rootElement.name(), rootElement.description(), children));
         }
 
-        initTopics();
-    }
+        List<EventModel> events = jdbcTemplate.query(
+                "SELECT ID, nr, von, bis, ort FROM termin",
+                (rs, rowNum) -> new EventModel(
+                        rs.getLong("ID"),
+                        rs.getString("nr"),
+                        rs.getDate("von"),
+                        rs.getDate("bis"),
+                        rs.getString("ort")
+                ));
 
-    protected void initTopics() {
+        List<TopicEventModel> topicEvents = jdbcTemplate.query(
+                "SELECT thema, termin, prioritaet FROM thema_termin",
+                (rs, rowNum) -> new TopicEventModel(
+                        rs.getLong("thema"),
+                        rs.getLong("termin"),
+                        rs.getInt("prioritaet")
+                ));
+
+        Map<Long, EventModel> eventIdMap = new HashMap<>();
+        for (EventModel event : events) {
+            eventIdMap.put(event.id(), event);
+        }
+
         List<TopicModel> topicModels = jdbcTemplate.query(
                 "SELECT ID, nr, name, beschrLang, description FROM thema",
                 (rs, rowNum) -> new TopicModel(
@@ -99,15 +147,15 @@ public class CategoryDto {
                 ));
 
         for (Category category : categoryTree) {
-            fillCategoryTopics(category, categoryTopicModels, topicById);
+            fillCategoryTopics(category, categoryTopicModels, topicById, eventIdMap, topicEvents);
 
             for (Category child : category.children()) {
-                fillCategoryTopics(child, categoryTopicModels, topicById);
+                fillCategoryTopics(child, categoryTopicModels, topicById, eventIdMap, topicEvents);
             }
         }
     }
 
-    private void fillCategoryTopics(Category category, List<CategoryTopicModel> categoryTopicModels, Map<Long, TopicModel> topicById) {
+    void fillCategoryTopics(Category category, List<CategoryTopicModel> categoryTopicModels, Map<Long, TopicModel> topicById, Map<Long, EventModel> eventIdMap, List<TopicEventModel> topicEvents) {
         List<Long> categoryIds = new ArrayList<>();
         categoryIds.add(category.id());
         category.children().forEach(c -> categoryIds.add(c.id()));
@@ -116,35 +164,18 @@ public class CategoryDto {
                 .filter(ct -> categoryIds.contains(ct.categoryId()))
                 .sorted(Comparator.comparing(CategoryTopicModel::sort))
                 .map(ct -> topicById.get(ct.topicId()))
-                .map(t -> new Topic(t.nr(), t.title(), t.subtitle(), t.description(), List.of()))
+                .distinct()
+                .map(t -> new Topic(t.nr(), t.title(), t.subtitle(), t.description(), findEvents(t.id(), eventIdMap, topicEvents)))
                 .toList();
 
         this.categoryTopicMap.put(category, topics);
     }
 
-    public List<Category> getCategoryTree() {
-        if (categoryTree.isEmpty()) {
-            init();
-        }
-        return Collections.unmodifiableList(categoryTree);
-    }
-
-    public Category getCategoryByNr(String nr) {
-        for (Category category : categoryTree) {
-            if (category.nr().equals(nr)) {
-                return category;
-            }
-            for (Category child : category.children()) {
-                if (child.nr().equals(nr)) {
-                    return child;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public List<Topic> getTopics(Category category) {
-        return Collections.unmodifiableList(categoryTopicMap.getOrDefault(category, new ArrayList<>()));
+    List<Event> findEvents(Long topicId, Map<Long, EventModel> eventIdMap, List<TopicEventModel> topicEvents) {
+        return topicEvents.stream()
+                .filter(te -> te.topicId().equals(topicId))
+                .sorted(Comparator.comparing(TopicEventModel::sort))
+                .map(te -> eventIdMap.get(te.eventId()))
+                .map(e -> new Event(e.nr(), e.begin(), e.end(), e.place())).toList();
     }
 }
