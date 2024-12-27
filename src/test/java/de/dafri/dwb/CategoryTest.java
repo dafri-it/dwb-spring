@@ -40,8 +40,6 @@ public class CategoryTest {
         List<Category> tree = categoryDto.getCategoryTree();
         Category recht = tree.get(1);
 
-//        recht.children().stream().map(Category::nr).forEach(System.out::println);
-
         Assertions.assertEquals("210", recht.children().get(0).nr());
         Assertions.assertEquals("220", recht.children().get(1).nr());
         Assertions.assertEquals("230", recht.children().get(2).nr());

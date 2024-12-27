@@ -26,19 +26,23 @@
     </ul>
 </aside>
 <main>
-    <h1>${view.category().name()}</h1>
-    <ul>
-        @for(TopicListViewItem topic: view.topics())
-            <li>
-                <a href="/topic/${topic.nr()}">${topic.title()}</a>
-                <ul>
-                    @for(EventViewItem event : topic.events())
-                        <li>${event.begin().toString()} ${event.place()}</li>
-                    @endfor
-                </ul>
-            </li>
-        @endfor
-    </ul>
+    @if(view.category() == null)
+        Please select a category
+    @else
+        <h1>${view.category().name()}</h1>
+        <ul>
+            @for(TopicListViewItem topic: view.topics())
+                <li>
+                    <a href="/topic/${topic.nr()}">${topic.title()}</a>
+                    <ul>
+                        @for(EventViewItem event : topic.events())
+                            <li>${event.begin().toString()} ${event.place()}</li>
+                        @endfor
+                    </ul>
+                </li>
+            @endfor
+        </ul>
+    @endif
 </main>
 </body>
 </html>
