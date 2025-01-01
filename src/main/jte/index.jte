@@ -1,10 +1,13 @@
 @import de.dafri.dwb.view.CategoryTreeViewItem
 @import de.dafri.dwb.view.EventViewItem
+@import de.dafri.dwb.view.SortLink
 @import de.dafri.dwb.view.TopicListViewItem
+@import java.util.List
 
 @param de.dafri.dwb.view.TopicView view
 @param String sortBy
 @param String sortOrder
+@param List<SortLink> sortLinks
 
 <!doctype html>
 <html lang="en">
@@ -42,14 +45,11 @@
         Please select a category
     @else
         <h1>${view.category().name()}</h1>
-        Sort:
-        <a href="/category/${view.category().nr()}?sortBy=none">Default</a>
-        <a href="/category/${view.category().nr()}?sortBy=name&sortOrder=up">By Name Asc</a>
-        <a href="/category/${view.category().nr()}?sortBy=name&sortOrder=down">By Name Desc</a>
-        <a href="/category/${view.category().nr()}?sortBy=date&sortOrder=up">By Date Asc</a>
-        <a href="/category/${view.category().nr()}?sortBy=date&sortOrder=down">By Date Desc</a>
-        <a href="/category/${view.category().nr()}?sortBy=place&sortOrder=up">By Place Asc</a>
-        <a href="/category/${view.category().nr()}?sortBy=place&sortOrder=down">By Place Desc</a>
+        
+        @for(SortLink link : sortLinks)
+            <a href="/category/${view.category().nr()}${link.link()}">${link.title()} ${link.direction()}</a>
+        @endfor
+
         <ul>
             @for(TopicListViewItem topic: view.topics())
                 <li>
