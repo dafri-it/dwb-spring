@@ -63,11 +63,14 @@
             @endfor
         </ul>
         <a href="/category/${view.category().nr()}?page=${view.pageable().previousOrFirst().getPageNumber()}&sortBy=${sortBy}&sortOrder=${sortOrder}">Previous</a>
-        @for(int index = 0, current = view.pageable().() - 1; index++)
 
+        @for(int index = 0; index < view.pageCount(); index++)
+            <a href="/category/${view.category().nr()}?page=${index}&sortBy=${sortBy}&sortOrder=${sortOrder}">${index + 1}</a>
         @endfor
 
-        <a href="/category/${view.category().nr()}?page=${view.pageable().next().getPageNumber()}&sortBy=${sortBy}&sortOrder=${sortOrder}">Next</a>
+        @if(view.pageable().getPageNumber() < view.pageCount() -1)
+            <a href="/category/${view.category().nr()}?page=${view.pageable().next().getPageNumber()}&sortBy=${sortBy}&sortOrder=${sortOrder}">Next</a>
+        @endif
     @endif
 </main>
 </body>

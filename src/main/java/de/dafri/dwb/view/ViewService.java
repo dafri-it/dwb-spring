@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 public class ViewService {
@@ -23,7 +22,7 @@ public class ViewService {
 
     public TopicView getIndexView() {
         List<CategoryTreeViewItem> tree = categoryDto.getCategoryTree().stream().map(this::toTreeItem).toList();
-        return new TopicView(tree, null, List.of(), null);
+        return new TopicView(tree, null, List.of(), null, 0);
     }
 
     public TopicView getCategoryView(String categoryNr, Pageable pageable) {
@@ -35,10 +34,10 @@ public class ViewService {
         Sort.Order byDate = pageable.getSort().getOrderFor("date");
         Sort.Order byPlace = pageable.getSort().getOrderFor("place");
 
-        Stream<TopicListViewItem> viewItemStream;
+        List<TopicListViewItem> viewItems;
 
         if (byName != null) {
-            viewItemStream = topics.stream()
+            viewItems = topics.stream()
                     .sorted((o1, o2) -> {
                                 if (byName.isAscending()) {
                                     return o1.title().compareTo(o2.title());
@@ -46,7 +45,8 @@ public class ViewService {
                                     return o2.title().compareTo(o1.title());
                                 }
                             }
-                    ).map(this::toTopicItem);
+                    ).map(this::toTopicItem)
+                    .toList();
         } else if (byDate != null || byPlace != null) {
             List<TopicEventItem> topicEventItems = new ArrayList<>();
             for (Topic topic : topics) {
@@ -57,7 +57,7 @@ public class ViewService {
                 }
             }
 
-            viewItemStream = topicEventItems.stream()
+            viewItems = topicEventItems.stream()
                     .filter(ei -> ei.eventNr() != null)
                     .sorted((o1, o2) -> {
                         if (byDate != null) {
@@ -67,24 +67,29 @@ public class ViewService {
                                 return o2.begin().compareTo(o1.begin());
                             }
                         }
-                        if (byPlace != null) {
+                        else {
                             if (byPlace.isAscending()) {
                                 return o1.place().compareTo(o2.place());
                             } else {
                                 return o2.place().compareTo(o1.place());
                             }
                         }
-                        return 0;
                     })
-                    .map(this::toTopicItem);
+                    .map(this::toTopicItem)
+                    .toList();
         } else {
-            viewItemStream = topics.stream().map(this::toTopicItem);
+            viewItems = topics.stream()
+                    .map(this::toTopicItem)
+                    .toList();
         }
 
-        List<TopicListViewItem> pagedTopics = viewItemStream.skip(pageable.getOffset()).limit(pageable.getPageSize()).toList();
+        int total = viewItems.size();
+        int pageCount = (int) Math.ceil((double) total / (double) pageable.getPageSize());
+
+        List<TopicListViewItem> pagedTopics = viewItems.stream().skip(pageable.getOffset()).limit(pageable.getPageSize()).toList();
 
 
-        return new TopicView(tree, toTreeItem(category), pagedTopics, pageable);
+        return new TopicView(tree, toTreeItem(category), pagedTopics, pageable, pageCount);
     }
 
     private TopicListViewItem toTopicItem(Topic topic) {
