@@ -57,7 +57,7 @@ public class CategoryDto {
                 categoryRepository.getCategoryModels(),
                 categoryRepository.getCategoryRelationModels());
 
-        this.categoryTopicMap = new TopicCreator().createTopics(
+        this.categoryTopicMap = new TopicListCreator().createTopics(
                 categoryRepository.getEventModels(),
                 categoryRepository.getTopicEventModels(),
                 categoryRepository.getTopicModels(),

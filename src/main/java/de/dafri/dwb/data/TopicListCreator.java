@@ -7,7 +7,7 @@ import de.dafri.dwb.domain.Topic;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TopicCreator {
+public class TopicListCreator {
 
     private final Map<Category, List<Topic>> categoryTopicMap = new HashMap<>();
 
