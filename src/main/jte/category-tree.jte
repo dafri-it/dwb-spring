@@ -1,0 +1,32 @@
+@import de.dafri.dwb.view.CategoryTreeViewItem
+@import java.util.List
+@param List<CategoryTreeViewItem> tree
+@param CategoryTreeViewItem current
+
+<style>
+    .current {
+        background: yellow;
+    }
+
+    li ul {
+        display: none;
+    }
+
+    li.current ul {
+        display: block;
+    }
+</style>
+<ul>
+    @for(CategoryTreeViewItem item: tree)
+        <li class="${(current != null && (current.equals(item) || item.children().contains(current))) ? "current" : null}">
+            <a href="/category/${item.nr()}">${item.name()}</a>
+            <ul>
+                @for(CategoryTreeViewItem child: item.children())
+                    <li  class="${(current != null && current.equals(child)) ? "current" : null}">
+                        <a href="/category/${child.nr()}">${child.name()}</a>
+                    </li>
+                @endfor
+            </ul>
+        </li>
+    @endfor
+</ul>

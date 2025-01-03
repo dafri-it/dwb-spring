@@ -1,4 +1,3 @@
-@import de.dafri.dwb.view.CategoryTreeViewItem
 @import de.dafri.dwb.view.EventViewItem
 @import de.dafri.dwb.view.SortLink
 @import de.dafri.dwb.view.TopicListViewItem
@@ -17,28 +16,9 @@
     <title>Start</title>
 </head>
 <body style="display: flex">
-<aside>
-    <ul>
-        @for(CategoryTreeViewItem item: view.tree())
-            <li>
-                @if(view.category() != null && view.category().equals(item))
-                    &gt;
-                @endif
-                <a href="/category/${item.nr()}">${item.name()}</a>
-                <ul>
-                    @for(CategoryTreeViewItem child: item.children())
 
-                        <li>
-                            @if(view.category() != null && view.category().equals(child))
-                                &gt;
-                            @endif
-                            <a href="/category/${child.nr()}">${child.name()}</a>
-                        </li>
-                    @endfor
-                </ul>
-            </li>
-        @endfor
-    </ul>
+<aside>
+    @template.category-tree(tree = view.tree(), current = view.category())
 </aside>
 <main>
     @if(view.category() == null)
