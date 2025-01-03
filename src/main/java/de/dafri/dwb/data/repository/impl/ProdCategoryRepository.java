@@ -1,6 +1,7 @@
-package de.dafri.dwb.data.impl;
+package de.dafri.dwb.data.repository.impl;
 
-import de.dafri.dwb.data.*;
+import de.dafri.dwb.data.model.*;
+import de.dafri.dwb.data.repository.CategoryRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 

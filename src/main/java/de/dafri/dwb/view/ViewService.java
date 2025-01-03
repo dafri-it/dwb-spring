@@ -1,9 +1,11 @@
 package de.dafri.dwb.view;
 
+import de.dafri.dwb.data.TopicDto;
 import de.dafri.dwb.data.CategoryDto;
 import de.dafri.dwb.domain.Category;
 import de.dafri.dwb.domain.Event;
 import de.dafri.dwb.domain.Topic;
+import de.dafri.dwb.domain.TopicDetail;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,18 +17,20 @@ import java.util.List;
 public class ViewService {
 
     private final CategoryDto categoryDto;
+    private final TopicDto topicDto;
 
-    public ViewService(CategoryDto categoryDto) {
+    public ViewService(CategoryDto categoryDto, TopicDto topicDto) {
         this.categoryDto = categoryDto;
+        this.topicDto = topicDto;
     }
 
-    public TopicView getIndexView() {
-        List<CategoryTreeViewItem> tree = categoryDto.getCategoryTree().stream().map(this::toTreeItem).toList();
-        return new TopicView(tree, null, List.of(), null, 0);
+    public CategoryView getIndexView() {
+        List<CategoryTreeViewItem> tree = getTree();
+        return new CategoryView(tree, null, List.of(), null, 0);
     }
 
-    public TopicView getCategoryView(String categoryNr, Pageable pageable) {
-        List<CategoryTreeViewItem> tree = categoryDto.getCategoryTree().stream().map(this::toTreeItem).toList();
+    public CategoryView getCategoryView(String categoryNr, Pageable pageable) {
+        List<CategoryTreeViewItem> tree = getTree();
         Category category = categoryDto.getCategoryByNr(categoryNr);
         List<Topic> topics = categoryDto.getTopics(category);
 
@@ -89,7 +93,18 @@ public class ViewService {
         List<TopicListViewItem> pagedTopics = viewItems.stream().skip(pageable.getOffset()).limit(pageable.getPageSize()).toList();
 
 
-        return new TopicView(tree, toTreeItem(category), pagedTopics, pageable, pageCount);
+        return new CategoryView(tree, toTreeItem(category), pagedTopics, pageable, pageCount);
+    }
+
+    public TopicView getTopicView(String nr) {
+        TopicDetail topicDetail = topicDto.getByNr(nr);
+
+        List<EventViewItem> events = topicDetail.events().stream().map(this::toEventItem).toList();
+        return new TopicView(getTree(), topicDetail.nr(), topicDetail.title(), topicDetail.description(), topicDetail.text(), events);
+    }
+
+    private List<CategoryTreeViewItem> getTree() {
+        return categoryDto.getCategoryTree().stream().map(this::toTreeItem).toList();
     }
 
     private TopicListViewItem toTopicItem(Topic topic) {
@@ -107,5 +122,4 @@ public class ViewService {
     private CategoryTreeViewItem toTreeItem(Category category) {
         return new CategoryTreeViewItem(category.nr(), category.name(), category.children().stream().map(this::toTreeItem).toList());
     }
-
 }

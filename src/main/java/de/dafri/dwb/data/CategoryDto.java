@@ -1,5 +1,6 @@
 package de.dafri.dwb.data;
 
+import de.dafri.dwb.data.repository.CategoryRepository;
 import de.dafri.dwb.domain.Category;
 import de.dafri.dwb.domain.Topic;
 import org.slf4j.Logger;

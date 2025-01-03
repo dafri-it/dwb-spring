@@ -1,5 +1,9 @@
 package de.dafri.dwb.data;
 
+import de.dafri.dwb.data.model.CategoryTopicModel;
+import de.dafri.dwb.data.model.EventModel;
+import de.dafri.dwb.data.model.TopicEventModel;
+import de.dafri.dwb.data.model.TopicModel;
 import de.dafri.dwb.domain.Category;
 import de.dafri.dwb.domain.Event;
 import de.dafri.dwb.domain.Topic;

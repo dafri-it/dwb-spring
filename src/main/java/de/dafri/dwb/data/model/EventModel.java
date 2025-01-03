@@ -1,4 +1,4 @@
-package de.dafri.dwb.data;
+package de.dafri.dwb.data.model;
 
 import java.util.Date;
 

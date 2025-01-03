@@ -1,5 +1,7 @@
 package de.dafri.dwb.data;
 
+import de.dafri.dwb.data.model.CategoryModel;
+import de.dafri.dwb.data.model.CategoryRelationModel;
 import de.dafri.dwb.domain.Category;
 
 import java.util.*;

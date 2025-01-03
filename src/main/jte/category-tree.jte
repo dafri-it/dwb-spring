@@ -4,19 +4,21 @@
 @param CategoryTreeViewItem current
 
 <style>
-    .current {
-        background: yellow;
-    }
+    .tree {
+        .current {
+            background: yellow;
+        }
 
-    li ul {
-        display: none;
-    }
+        li ul {
+            display: none;
+        }
 
-    li.current ul {
-        display: block;
+        li.current ul {
+            display: block;
+        }
     }
 </style>
-<ul>
+<ul class="tree">
     @for(CategoryTreeViewItem item: tree)
         <li class="${(current != null && (current.equals(item) || item.children().contains(current))) ? "current" : null}">
             <a href="/category/${item.nr()}">${item.name()}</a>

@@ -1,8 +1,8 @@
 package de.dafri.dwb.frontend;
 
+import de.dafri.dwb.view.CategoryView;
 import de.dafri.dwb.view.SortLink;
 import de.dafri.dwb.view.SortToggle;
-import de.dafri.dwb.view.TopicView;
 import de.dafri.dwb.view.ViewService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +26,7 @@ public class CategoryController {
 
     @GetMapping
     public String index(Model model) {
-        TopicView view = viewService.getIndexView();
+        CategoryView view = viewService.getIndexView();
         model.addAttribute("view", view);
         return "index";
     }
@@ -53,7 +53,7 @@ public class CategoryController {
 
         List<SortLink> sortLinks = getSortLinks(sortBy, sortOrder);
 
-        TopicView view = viewService.getCategoryView(nr, pageable);
+        CategoryView view = viewService.getCategoryView(nr, pageable);
         model.addAttribute("view", view);
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("sortOrder", sortOrder);

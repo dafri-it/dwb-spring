@@ -1,9 +1,6 @@
 package de.dafri.dwb.view;
 
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
-public record TopicView(List<CategoryTreeViewItem> tree, CategoryTreeViewItem category, List<TopicListViewItem> topics,
-                        Pageable pageable, int pageCount) {
+public record TopicView(List<CategoryTreeViewItem> tree, String nr, String title, String description, String text, List<EventViewItem> events) {
 }
