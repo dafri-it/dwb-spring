@@ -3,6 +3,8 @@ package de.dafri.dwb.data;
 import de.dafri.dwb.data.repository.CategoryRepository;
 import de.dafri.dwb.domain.Category;
 import de.dafri.dwb.domain.Topic;
+import de.dafri.dwb.exception.CategoryNotFoundException;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -25,10 +27,12 @@ public class CategoryDto {
         this.categoryRepository = categoryRepository;
     }
 
+    @PostConstruct
+    private void start() {
+        init();
+    }
+
     public List<Category> getCategoryTree() {
-        if (categoryTree.isEmpty()) {
-            init();
-        }
         return Collections.unmodifiableList(categoryTree);
     }
 
@@ -44,7 +48,7 @@ public class CategoryDto {
             }
         }
 
-        return null;
+        throw new CategoryNotFoundException(nr);
     }
 
     public List<Topic> getTopics(Category category) {
