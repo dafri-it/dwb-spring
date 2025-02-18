@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Start</title>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
     <style>
         .container {
             display: flex;

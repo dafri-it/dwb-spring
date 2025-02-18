@@ -1,0 +1,20 @@
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+  <input type="text" formControlName="firstName">
+  <input type="text" formControlName="lastName">
+  <input type="email" formControlName="email">
+
+  <hr>
+  <div *ngFor="let participant of participants.controls; let i = index">
+    <div [formGroup]="participant">
+      <input type="text" formControlName="firstName">
+      <input type="text" formControlName="lastName">
+      <input type="email" formControlName="email">
+      <button type="button" (click)="removeParticipant(i)">Remove</button>
+      <hr>
+    </div>
+  </div>
+  <button type="button" (click)="addParticipant()">Add</button>
+  <hr>
+
+  <button type="submit">Submit</button>
+</form>

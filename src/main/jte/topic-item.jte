@@ -7,7 +7,7 @@
     <a href="/topic/${topic.nr()}">${topic.title()}</a>
     <ul>
         @for(EventViewItem event : topic.events())
-            <li>${event.begin().toString()} ${event.place()}</li>
+            <li>${event.begin().toString()} ${event.place()} <a href="/event/${topic.nr()}/register">Register</a> </li>
         @endfor
     </ul>
 </li>

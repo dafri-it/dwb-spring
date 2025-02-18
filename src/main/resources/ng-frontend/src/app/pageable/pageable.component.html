@@ -1,0 +1,13 @@
+<div style="display: flex;gap: 10px">
+  @if (previous) {
+    <a [routerLink]="previous">previous</a>
+  }
+
+  @for (page of pages; track $index) {
+    <a [routerLink]="page">{{ $index + 1 }}</a>
+  }
+
+  @if (next) {
+    <a [routerLink]="next">next</a>
+  }
+</div>
