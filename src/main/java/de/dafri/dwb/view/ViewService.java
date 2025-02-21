@@ -6,6 +6,8 @@ import de.dafri.dwb.domain.Category;
 import de.dafri.dwb.domain.Event;
 import de.dafri.dwb.domain.Topic;
 import de.dafri.dwb.domain.TopicDetail;
+import de.dafri.dwb.exception.CategoryNotFoundException;
+import de.dafri.dwb.exception.TopicNotFoundException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,9 @@ public class ViewService {
     public CategoryView getCategoryView(String categoryNr, Pageable pageable) {
         List<CategoryTreeViewItem> tree = getTree();
         Category category = categoryDto.getCategoryByNr(categoryNr);
+        if (category == null) {
+            throw new CategoryNotFoundException(categoryNr);
+        }
         List<Topic> topics = categoryDto.getTopics(category);
 
         Sort.Order byName = pageable.getSort().getOrderFor("name");
@@ -98,6 +103,9 @@ public class ViewService {
 
     public TopicView getTopicView(String nr) {
         TopicDetail topicDetail = topicDto.getByNr(nr);
+        if (topicDetail == null) {
+            throw new TopicNotFoundException(nr);
+        }
 
         List<EventViewItem> events = topicDetail.events().stream().map(this::toEventItem).toList();
         return new TopicView(getTree(), topicDetail.nr(), topicDetail.title(), topicDetail.description(), topicDetail.text(), events);
