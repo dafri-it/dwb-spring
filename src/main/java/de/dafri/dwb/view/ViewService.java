@@ -7,7 +7,10 @@ import de.dafri.dwb.domain.Event;
 import de.dafri.dwb.domain.Topic;
 import de.dafri.dwb.domain.TopicDetail;
 import de.dafri.dwb.exception.CategoryNotFoundException;
+import de.dafri.dwb.exception.CategoryRedirectException;
 import de.dafri.dwb.exception.TopicNotFoundException;
+import de.dafri.dwb.search.Search;
+import de.dafri.dwb.util.Slugger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,10 +23,12 @@ public class ViewService {
 
     private final CategoryDto categoryDto;
     private final TopicDto topicDto;
+    private final Search search;
 
-    public ViewService(CategoryDto categoryDto, TopicDto topicDto) {
+    public ViewService(CategoryDto categoryDto, TopicDto topicDto, Search search) {
         this.categoryDto = categoryDto;
         this.topicDto = topicDto;
+        this.search = search;
     }
 
     public CategoryView getIndexView() {
@@ -31,12 +36,26 @@ public class ViewService {
         return new CategoryView(tree, null, List.of(), null, 0);
     }
 
-    public CategoryView getCategoryView(String categoryNr, Pageable pageable) {
+    public CategoryView getCategoryView(String query, Pageable pageable) {
         List<CategoryTreeViewItem> tree = getTree();
-        Category category = categoryDto.getCategoryByNr(categoryNr);
+        Category category = categoryDto.getCategoryByNr(query);
+
         if (category == null) {
-            throw new CategoryNotFoundException(categoryNr);
+            List<Category> results = search.searchCategory(query);
+            if (results.isEmpty()) {
+                throw new CategoryNotFoundException(query);
+            }
+            category = results.getFirst();
         }
+
+        if (category == null) {
+            throw new CategoryNotFoundException(query);
+        }
+
+        if (!category.slug().equals(query)) {
+            throw new CategoryRedirectException(category);
+        }
+
         List<Topic> topics = categoryDto.getTopics(category);
 
         Sort.Order byName = pageable.getSort().getOrderFor("name");
@@ -116,11 +135,11 @@ public class ViewService {
     }
 
     private TopicListViewItem toTopicItem(Topic topic) {
-        return new TopicListViewItem(topic.nr(), topic.title(), topic.subtitle(), topic.description(), topic.events().stream().map(this::toEventItem).toList());
+        return new TopicListViewItem(topic.nr(), topic.title(), topic.subtitle(), topic.description(), Slugger.slug(topic.title()), topic.events().stream().map(this::toEventItem).toList());
     }
 
     private TopicListViewItem toTopicItem(TopicEventItem tei) {
-        return new TopicListViewItem(tei.topicNr(), tei.title(), tei.subtitle(), tei.description(), List.of(new EventViewItem(tei.eventNr(), tei.begin(), tei.end(), tei.place())));
+        return new TopicListViewItem(tei.topicNr(), tei.title(), tei.subtitle(), tei.description(), Slugger.slug(tei.title()), List.of(new EventViewItem(tei.eventNr(), tei.begin(), tei.end(), tei.place())));
     }
 
     private EventViewItem toEventItem(Event event) {
@@ -128,6 +147,6 @@ public class ViewService {
     }
 
     private CategoryTreeViewItem toTreeItem(Category category) {
-        return new CategoryTreeViewItem(category.nr(), category.name(), category.children().stream().map(this::toTreeItem).toList());
+        return new CategoryTreeViewItem(category.nr(), category.name(), category.slug(), category.children().stream().map(this::toTreeItem).toList());
     }
 }

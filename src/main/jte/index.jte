@@ -18,7 +18,7 @@
             <h1>${view.category().name()}</h1>
 
             @for(SortLink link : sortLinks)
-                <a href="/category/${view.category().nr()}${link.link()}">${link.title()} ${link.direction()}</a>
+                <a href="/category/${view.category().slug()}${link.link()}">${link.title()} ${link.direction()}</a>
             @endfor
 
             <ul>
@@ -29,17 +29,17 @@
 
             @if(view.pageCount() > 1)
                 @if(view.pageable().hasPrevious())
-                    <a href="/category/${view.category().nr()}?page=${view.pageable().previousOrFirst().getPageNumber()}&sortBy=${sortBy}&sortOrder=${sortOrder}">Previous</a>
+                    <a href="/category/${view.category().slug()}?page=${view.pageable().previousOrFirst().getPageNumber()}&sortBy=${sortBy}&sortOrder=${sortOrder}">Previous</a>
                 @else
                     Previous
                 @endif
 
                 @for(int index = 0; index < view.pageCount(); index++)
-                    <a href="/category/${view.category().nr()}?page=${index}&sortBy=${sortBy}&sortOrder=${sortOrder}">${index + 1}</a>
+                    <a href="/category/${view.category().slug()}?page=${index}&sortBy=${sortBy}&sortOrder=${sortOrder}">${index + 1}</a>
                 @endfor
 
                 @if(view.pageable().getPageNumber() < view.pageCount() -1)
-                    <a href="/category/${view.category().nr()}?page=${view.pageable().next().getPageNumber()}&sortBy=${sortBy}&sortOrder=${sortOrder}">Next</a>
+                    <a href="/category/${view.category().slug()}?page=${view.pageable().next().getPageNumber()}&sortBy=${sortBy}&sortOrder=${sortOrder}">Next</a>
                 @else
                     Next
                 @endif

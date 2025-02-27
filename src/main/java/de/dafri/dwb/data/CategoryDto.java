@@ -3,16 +3,12 @@ package de.dafri.dwb.data;
 import de.dafri.dwb.data.repository.CategoryRepository;
 import de.dafri.dwb.domain.Category;
 import de.dafri.dwb.domain.Topic;
-import de.dafri.dwb.exception.CategoryNotFoundException;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class CategoryDto {
@@ -22,6 +18,7 @@ public class CategoryDto {
     private List<Category> categoryTree = new ArrayList<>();
     private final CategoryRepository categoryRepository;
     private Map<Category, List<Topic>> categoryTopicMap;
+    private List<Category> categoryList;
 
     public CategoryDto(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
@@ -48,7 +45,7 @@ public class CategoryDto {
             }
         }
 
-        throw new CategoryNotFoundException(nr);
+        return null;
     }
 
     public List<Topic> getTopics(Category category) {
@@ -69,6 +66,21 @@ public class CategoryDto {
                 categoryRepository.getCategoryTopicModels(),
                 categoryTree);
 
+        this.categoryList = flatTree(categoryTree);
+
         logger.info("Categories initialized");
+    }
+
+    private List<Category> flatTree(List<Category> categoryTree) {
+        Set<Category> categorySet = new HashSet<>();
+        for (Category category : categoryTree) {
+            categorySet.add(category);
+            categorySet.addAll(category.children());
+        }
+        return List.copyOf(categorySet);
+    }
+
+    public List<Category> getCategoryList() {
+        return Collections.unmodifiableList(categoryList);
     }
 }
