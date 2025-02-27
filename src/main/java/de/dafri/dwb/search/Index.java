@@ -2,6 +2,7 @@ package de.dafri.dwb.search;
 
 import de.dafri.dwb.util.Slugger;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,8 +33,9 @@ public class Index<T> {
         return map.entrySet().stream()
                 .map(e ->searchInParts(e, parts))
                 .filter(r ->r.score() > 0)
-                .sorted((o1, o2) -> (int) (o2.score() * 100 - o1.score() * 100))
-                .toList();
+                .sorted(Comparator.comparingDouble(RankedSearchResult::score))
+                .toList()
+                .reversed();
     }
 
     private RankedSearchResult<T> searchInParts(Map.Entry<String, T> e, String[] parts) {
@@ -60,7 +62,7 @@ public class Index<T> {
 
         int score = fuzzyScore(e.getKey(), query);
         if (score > 0) {
-            return new RankedSearchResult<>(e.getValue(), score * 0.01);
+            return new RankedSearchResult<>(e.getValue(), score * 0.001);
         }
 
         return new RankedSearchResult<>(e.getValue(), 0);

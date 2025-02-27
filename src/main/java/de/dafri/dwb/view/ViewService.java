@@ -9,6 +9,7 @@ import de.dafri.dwb.domain.TopicDetail;
 import de.dafri.dwb.exception.CategoryNotFoundException;
 import de.dafri.dwb.exception.CategoryRedirectException;
 import de.dafri.dwb.exception.TopicNotFoundException;
+import de.dafri.dwb.exception.TopicRedirectException;
 import de.dafri.dwb.search.Search;
 import de.dafri.dwb.util.Slugger;
 import org.springframework.data.domain.Pageable;
@@ -94,8 +95,7 @@ public class ViewService {
                             } else {
                                 return o2.begin().compareTo(o1.begin());
                             }
-                        }
-                        else {
+                        } else {
                             if (byPlace.isAscending()) {
                                 return o1.place().compareTo(o2.place());
                             } else {
@@ -120,10 +120,24 @@ public class ViewService {
         return new CategoryView(tree, toTreeItem(category), pagedTopics, pageable, pageCount);
     }
 
-    public TopicView getTopicView(String nr) {
-        TopicDetail topicDetail = topicDto.getByNr(nr);
+    public TopicView getTopicView(String query) {
+        TopicDetail topicDetail = topicDto.getByNr(query);
+
         if (topicDetail == null) {
-            throw new TopicNotFoundException(nr);
+            List<Topic> topics = search.searchTopic(query);
+            if (topics.isEmpty()) {
+                throw new TopicNotFoundException(query);
+            }
+
+            topicDetail = topicDto.getByNr(topics.getFirst().nr());
+        }
+
+        if (topicDetail == null) {
+            throw new TopicNotFoundException(query);
+        }
+
+        if (!topicDetail.slug().equals(query)) {
+            throw new TopicRedirectException(topicDetail);
         }
 
         List<EventViewItem> events = topicDetail.events().stream().map(this::toEventItem).toList();
@@ -135,11 +149,11 @@ public class ViewService {
     }
 
     private TopicListViewItem toTopicItem(Topic topic) {
-        return new TopicListViewItem(topic.nr(), topic.title(), topic.subtitle(), topic.description(), Slugger.slug(topic.title()), topic.events().stream().map(this::toEventItem).toList());
+        return new TopicListViewItem(topic.nr(), topic.title(), topic.subtitle(), topic.slug(), topic.description(), topic.events().stream().map(this::toEventItem).toList());
     }
 
     private TopicListViewItem toTopicItem(TopicEventItem tei) {
-        return new TopicListViewItem(tei.topicNr(), tei.title(), tei.subtitle(), tei.description(), Slugger.slug(tei.title()), List.of(new EventViewItem(tei.eventNr(), tei.begin(), tei.end(), tei.place())));
+        return new TopicListViewItem(tei.topicNr(), tei.title(), tei.subtitle(), Slugger.slug(tei.title()), tei.description(), List.of(new EventViewItem(tei.eventNr(), tei.begin(), tei.end(), tei.place())));
     }
 
     private EventViewItem toEventItem(Event event) {

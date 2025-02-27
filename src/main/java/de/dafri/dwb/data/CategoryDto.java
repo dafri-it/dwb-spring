@@ -1,5 +1,6 @@
 package de.dafri.dwb.data;
 
+import de.dafri.dwb.data.model.TopicModel;
 import de.dafri.dwb.data.repository.CategoryRepository;
 import de.dafri.dwb.domain.Category;
 import de.dafri.dwb.domain.Topic;
@@ -19,6 +20,7 @@ public class CategoryDto {
     private final CategoryRepository categoryRepository;
     private Map<Category, List<Topic>> categoryTopicMap;
     private List<Category> categoryList;
+    private List<Topic> topicList;
 
     public CategoryDto(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
@@ -67,8 +69,15 @@ public class CategoryDto {
                 categoryTree);
 
         this.categoryList = flatTree(categoryTree);
+        this.topicList = createTopicList(categoryRepository.getTopicModels());
 
         logger.info("Categories initialized");
+    }
+
+    private List<Topic> createTopicList(List<TopicModel> topicModels) {
+        return topicModels.stream()
+                .map(tm -> new Topic(tm.nr(), tm.title(), tm.subtitle(), tm.description(), List.of()))
+                .toList();
     }
 
     private List<Category> flatTree(List<Category> categoryTree) {
@@ -82,5 +91,9 @@ public class CategoryDto {
 
     public List<Category> getCategoryList() {
         return Collections.unmodifiableList(categoryList);
+    }
+
+    public List<Topic> getTopicList() {
+        return topicList;
     }
 }
