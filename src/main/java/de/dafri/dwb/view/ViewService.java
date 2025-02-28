@@ -10,7 +10,8 @@ import de.dafri.dwb.exception.CategoryNotFoundException;
 import de.dafri.dwb.exception.CategoryRedirectException;
 import de.dafri.dwb.exception.TopicNotFoundException;
 import de.dafri.dwb.exception.TopicRedirectException;
-import de.dafri.dwb.search.Search;
+import de.dafri.dwb.search.CategorySearch;
+import de.dafri.dwb.search.TopicSearch;
 import de.dafri.dwb.util.Slugger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,12 +25,14 @@ public class ViewService {
 
     private final CategoryDto categoryDto;
     private final TopicDto topicDto;
-    private final Search search;
+    private final CategorySearch categorySearch;
+    private final TopicSearch topicSearch;
 
-    public ViewService(CategoryDto categoryDto, TopicDto topicDto, Search search) {
+    public ViewService(CategoryDto categoryDto, TopicDto topicDto, CategorySearch categorySearch, TopicSearch topicSearch) {
         this.categoryDto = categoryDto;
         this.topicDto = topicDto;
-        this.search = search;
+        this.categorySearch = categorySearch;
+        this.topicSearch = topicSearch;
     }
 
     public CategoryView getIndexView() {
@@ -42,7 +45,7 @@ public class ViewService {
         Category category = categoryDto.getCategoryByNr(query);
 
         if (category == null) {
-            List<Category> results = search.searchCategory(query);
+            List<Category> results = categorySearch.search(query);
             if (results.isEmpty()) {
                 throw new CategoryNotFoundException(query);
             }
@@ -124,7 +127,7 @@ public class ViewService {
         TopicDetail topicDetail = topicDto.getByNr(query);
 
         if (topicDetail == null) {
-            List<Topic> topics = search.searchTopic(query);
+            List<Topic> topics = topicSearch.search(query);
             if (topics.isEmpty()) {
                 throw new TopicNotFoundException(query);
             }

@@ -18,6 +18,7 @@ import java.util.List;
 public class CategoryWebTest {
 
     static final int PAGE_SIZE = 10;
+    private final static String RECHT = "recht";
     private final static String RECHT_NR = "002";
     private final static String CATEGORY_NOT_EXISTING = "0011";
     private static final String AKTUELLES_NR = "0";
@@ -87,7 +88,7 @@ public class CategoryWebTest {
 
     @Test
     public void category_recht_has_topics() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR;
+        String url = "http://localhost:" + port + "/category/" + RECHT;
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -106,7 +107,7 @@ public class CategoryWebTest {
 
     @Test
     public void category_recht_has_pages() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR;
+        String url = "http://localhost:" + port + "/category/" + RECHT;
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -117,10 +118,10 @@ public class CategoryWebTest {
         int pages = topics.size() / PAGE_SIZE;
 
         for (int i = 0; i < pages + 1; i++) {
-            Assertions.assertTrue(response.getBody().contains("/category/" + RECHT_NR + "?page=" + i));
+            Assertions.assertTrue(response.getBody().contains("/category/" + RECHT + "?page=" + i));
         }
     }
-    
+
     @Test
     public void category_aktuelles_has_no_pages() {
         String url = "http://localhost:" + port + "/category/" + AKTUELLES_NR;
@@ -139,18 +140,18 @@ public class CategoryWebTest {
 
     @Test
     public void category_recht_has_sorting_links() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR;
+        String url = "http://localhost:" + port + "/category/" + RECHT;
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
-        Assertions.assertTrue(response.getBody().contains("/category/" + RECHT_NR + "?sortBy=name"));
-        Assertions.assertTrue(response.getBody().contains("/category/" + RECHT_NR + "?sortBy=date"));
-        Assertions.assertTrue(response.getBody().contains("/category/" + RECHT_NR + "?sortBy=place"));
+        Assertions.assertTrue(response.getBody().contains("/category/" + RECHT + "?sortBy=name"));
+        Assertions.assertTrue(response.getBody().contains("/category/" + RECHT + "?sortBy=date"));
+        Assertions.assertTrue(response.getBody().contains("/category/" + RECHT + "?sortBy=place"));
     }
 
     @Test
     public void category_sort_by_name_asc() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR + "?sortBy=name&sortOrder=asc";
+        String url = "http://localhost:" + port + "/category/" + RECHT + "?sortBy=name&sortOrder=asc";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -163,7 +164,7 @@ public class CategoryWebTest {
 
     @Test
     public void category_sort_by_name_desc() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR + "?sortBy=name&sortOrder=desc";
+        String url = "http://localhost:" + port + "/category/" + RECHT + "?sortBy=name&sortOrder=desc";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -176,7 +177,7 @@ public class CategoryWebTest {
 
     @Test
     public void category_sort_by_name_none() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR + "?sortBy=name&sortOrder=none";
+        String url = "http://localhost:" + port + "/category/" + RECHT + "?sortBy=name&sortOrder=none";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -189,7 +190,7 @@ public class CategoryWebTest {
 
     @Test
     public void category_sort_by_date_asc() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR + "?sortBy=date&sortOrder=asc";
+        String url = "http://localhost:" + port + "/category/" + RECHT + "?sortBy=date&sortOrder=asc";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -202,7 +203,7 @@ public class CategoryWebTest {
 
     @Test
     public void category_sort_by_date_desc() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR + "?sortBy=date&sortOrder=desc";
+        String url = "http://localhost:" + port + "/category/" + RECHT + "?sortBy=date&sortOrder=desc";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -215,7 +216,7 @@ public class CategoryWebTest {
 
     @Test
     public void category_sort_by_place_asc() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR + "?sortBy=place&sortOrder=asc";
+        String url = "http://localhost:" + port + "/category/" + RECHT + "?sortBy=place&sortOrder=asc";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -225,9 +226,10 @@ public class CategoryWebTest {
 
         Assertions.assertTrue(response.getBody().contains("?sortBy=place&amp;sortOrder=desc"));
     }
+
     @Test
     public void category_sort_by_place_desc() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR + "?sortBy=place&sortOrder=desc";
+        String url = "http://localhost:" + port + "/category/" + RECHT + "?sortBy=place&sortOrder=desc";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -241,7 +243,7 @@ public class CategoryWebTest {
 
     @Test
     public void category_invalid_sortBy() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR + "?sortBy=invalid&sortOrder=asc";
+        String url = "http://localhost:" + port + "/category/" + RECHT + "?sortBy=invalid&sortOrder=asc";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -254,7 +256,7 @@ public class CategoryWebTest {
 
     @Test
     public void category_invalid_sortOrder() {
-        String url = "http://localhost:" + port + "/category/" + RECHT_NR + "?sortBy=name&sortOrder=invalid";
+        String url = "http://localhost:" + port + "/category/" + RECHT + "?sortBy=name&sortOrder=invalid";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());

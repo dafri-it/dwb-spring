@@ -14,4 +14,8 @@ public record Topic(String nr, String title, String subtitle, String description
         return Slugger.slug(name);
     }
 
+    @Override
+    public String toString() {
+        return slug();
+    }
 }

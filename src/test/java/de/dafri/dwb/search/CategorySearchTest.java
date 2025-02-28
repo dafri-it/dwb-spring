@@ -10,10 +10,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class SearchTest {
+class CategorySearchTest {
 
     @Autowired
-    private Search search;
+    private CategorySearch search;
 
     @Test
     public void search_Category_aktuell_finds_Aktuelles() {
@@ -42,9 +42,9 @@ class SearchTest {
 
     @Test
     public void search_Category_junk_finds_nothing() {
-        List<Category> results = search.searchCategory("qwert");
+        List<Category> results = search.search("abcddee");
         assertNotNull(results);
-        assertTrue(results.isEmpty());
+        assertTrue(results.isEmpty(), results.toString());
     }
 
     @Test
@@ -59,9 +59,9 @@ class SearchTest {
     }
 
     private void searchCategory(String query, String expected) {
-        List<Category> results = search.searchCategory(query);
+        List<Category> results = search.search(query);
         assertNotNull(results);
-        assertFalse(results.isEmpty());
+        assertFalse(results.isEmpty(), "no results found");
         assertEquals(expected, results.getFirst().name(), results.toString());
     }
 

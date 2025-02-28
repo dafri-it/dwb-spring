@@ -3,7 +3,7 @@ package de.dafri.dwb.util;
 public class Slugger {
 
     public static String slug(String text) {
-        return text
+        String replaced = text
                 .replaceAll("ö", "oe")
                 .replaceAll("ä", "ae")
                 .replaceAll("ü", "ue")
@@ -11,9 +11,14 @@ public class Slugger {
                 .replaceAll("Ä", "Ae")
                 .replaceAll("Ü", "Ue")
                 .replaceAll("ß", "ss")
-                .replaceAll("[^a-zA-Z0-9]", "-").toLowerCase()
-                .replaceAll("---", "-")
-                .replaceAll("--", "-");
+                .replaceAll("[^a-zA-Z0-9]", " ").toLowerCase()
+                ;
+
+        replaced = replaced.trim();
+        replaced = replaced.replaceAll("  ", " ").replaceAll("  ", " ").replaceAll("  ", " ");
+        replaced = replaced.replaceAll(" ", "-");
+
+        return replaced;
     }
 
 }

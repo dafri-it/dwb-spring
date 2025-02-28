@@ -1,61 +1,32 @@
 package de.dafri.dwb.search;
 
-import de.dafri.dwb.data.CategoryDto;
-import de.dafri.dwb.domain.Category;
-import de.dafri.dwb.domain.Topic;
 import jakarta.annotation.PostConstruct;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-@Component
-@ApplicationScope
-public class Search {
+abstract class Search<T> {
 
-    private final CategoryDto categoryDto;
+    private final Index<T> index = new Index<>();
 
-    private final Index<Category> categoryIndex = new Index<>();
-    private final Index<Topic> topicIndex = new Index<>();
-
-    public Search(CategoryDto categoryDto) {
-        this.categoryDto = categoryDto;
+    public List<T> search(String query) {
+        return index.search(query);
     }
 
-    public List<Category> searchCategory(String query) {
-        return categoryIndex.search(query);
-    }
+    protected abstract Supplier<List<T>> getDataSupplier();
 
     @PostConstruct
-    private void init() {
-        addCategories(categoryIndex);
-        addTopics(topicIndex);
+    protected void init() {
+        addElements(index);
     }
 
-    private void addTopics(Index<Topic> index) {
-        List<Topic> topics = categoryDto.getTopicList();
-        for (Topic topic : topics) {
-            addTopic(index, topic);
+    private void addElements(Index<T> index) {
+        List<T> elements = getDataSupplier().get();
+        for (T element : elements) {
+            index.put(getElementKey(element), element);
         }
     }
 
-    private void addTopic(Index<Topic> index, Topic topic) {
-        index.put(topic.slug(), topic);
-    }
+    protected abstract String getElementKey(T element);
 
-    private void addCategories(Index<Category> index) {
-        List<Category> categories = categoryDto.getCategoryList();
-
-        for (Category category : categories) {
-            addCategory(index, category);
-        }
-    }
-
-    private void addCategory(Index<Category> index, Category category) {
-        index.put(category.slug(), category);
-    }
-
-    public List<Topic> searchTopic(String query) {
-        return topicIndex.search(query);
-    }
 }

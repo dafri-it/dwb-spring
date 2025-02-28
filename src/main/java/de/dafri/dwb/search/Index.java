@@ -1,6 +1,8 @@
 package de.dafri.dwb.search;
 
 import de.dafri.dwb.util.Slugger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
 import java.util.List;
@@ -8,6 +10,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Index<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(Index.class);
 
     private final Map<String, T> map = new ConcurrentHashMap<>();
 
@@ -17,6 +21,8 @@ public class Index<T> {
 
     public List<T> search(String query) {
         List<RankedSearchResult<T>> results = rankedSearch(query);
+
+        results.forEach(r -> logger.debug(r.toString()));
 
         return results.stream()
                 .map(RankedSearchResult::result)
@@ -31,8 +37,8 @@ public class Index<T> {
         String[] parts = Slugger.slug(query).split("-");
 
         return map.entrySet().stream()
-                .map(e ->searchInParts(e, parts))
-                .filter(r ->r.score() > 0)
+                .map(e -> searchInParts(e, parts))
+                .filter(r -> r.score() > 0.6)
                 .sorted(Comparator.comparingDouble(RankedSearchResult::score))
                 .toList()
                 .reversed();
@@ -40,76 +46,43 @@ public class Index<T> {
 
     private RankedSearchResult<T> searchInParts(Map.Entry<String, T> e, String[] parts) {
         double score = 0;
-        for (String part : parts) {
-            RankedSearchResult<T> result = searchInString(e, part);
-            score += result.score();
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            String[] termParts = Slugger.slug(e.getKey()).split("-");
+            for (int j = 0; j < termParts.length; j++) {
+                String termPart = termParts[j];
+                score += searchInString(termPart, part);
+                if (i == j && score > 0.6) {
+                    score += 1.0;
+                }
+            }
         }
         return new RankedSearchResult<>(e.getValue(), score);
     }
 
-    private RankedSearchResult<T> searchInString(Map.Entry<String, T> e, String query) {
-        if (e.getKey().equals(query)) {
-            return new RankedSearchResult<>(e.getValue(), 1);
+    private double searchInString(String term, String query) {
+        if (term.length() < 3 || query.length() < 3) {
+            return 0;
         }
 
-        if (e.getKey().startsWith(query)) {
-            return new RankedSearchResult<>(e.getValue(), 0.9);
+        if (term.equals(query)) {
+            return 1;
         }
 
-        if (e.getKey().contains(query)) {
-            return new RankedSearchResult<>(e.getValue(), 0.8);
+        if (term.startsWith(query)) {
+            return 0.9;
         }
 
-        int score = fuzzyScore(e.getKey(), query);
-        if (score > 0) {
-            return new RankedSearchResult<>(e.getValue(), score * 0.001);
+        if (term.contains(query)) {
+            return 0.8;
         }
 
-        return new RankedSearchResult<>(e.getValue(), 0);
+        double score = FuzzySearcher.fuzzySearch(term, query);
+        if (score > 0.7) {
+            return 0.7;
+        }
+
+        return -0.01;
     }
 
-    // source https://commons.apache.org/sandbox/commons-text/jacoco/org.apache.commons.text.similarity/FuzzyScore.java.html
-    private int fuzzyScore(final CharSequence term, final CharSequence query) {
-        final String termLowerCase = term.toString().toLowerCase();
-        final String queryLowerCase = query.toString().toLowerCase();
-
-        // the resulting score
-        int score = 0;
-
-        // the position in the term which will be scanned next for potential
-        // query character matches
-        int termIndex = 0;
-
-        // index of the previously matched character in the term
-        int previousMatchingCharacterIndex = Integer.MIN_VALUE;
-
-        for (int queryIndex = 0; queryIndex < queryLowerCase.length(); queryIndex++) {
-            final char queryChar = queryLowerCase.charAt(queryIndex);
-
-            boolean termCharacterMatchFound = false;
-            for (; termIndex < termLowerCase.length()
-                    && !termCharacterMatchFound; termIndex++) {
-                final char termChar = termLowerCase.charAt(termIndex);
-
-                if (queryChar == termChar) {
-                    // simple character matches result in one point
-                    score++;
-
-                    // subsequent character matches further improve
-                    // the score.
-                    if (previousMatchingCharacterIndex + 1 == termIndex) {
-                        score += 2;
-                    }
-
-                    previousMatchingCharacterIndex = termIndex;
-
-                    // we can leave the nested loop. Every character in the
-                    // query can match at most one character in the term.
-                    termCharacterMatchFound = true;
-                }
-            }
-        }
-
-        return score;
-    }
 }
