@@ -13,6 +13,7 @@ import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 })
 export class PageableComponent {
 
+  @Input()
   href: string = '';
 
   constructor() {
@@ -40,20 +41,20 @@ export class PageableComponent {
     if (this.pageable.pageNumber === 0) {
       return null;
     }
-    return this.href + "?page=" + (this.pageable.pageNumber - 1).toString();
+    return (this.pageable.pageNumber - 1).toString();
   }
 
   get next(): string | null {
     if (this.pageable.pageNumber >= this.pageCount - 1) {
       return null;
     }
-    return this.href + "?page=" + (this.pageable.pageNumber + 1).toString();
+    return (this.pageable.pageNumber + 1).toString();
   }
 
-  get pages(): string[] {
+  get pages(): number[] {
     let res = [];
     for (let i = 0; i < this.pageCount; i++) {
-      res.push(this.href + "?page=" + i);
+      res.push(i);
     }
     return res;
   }
