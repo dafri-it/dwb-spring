@@ -24,6 +24,9 @@ export class CategoryViewPageComponent implements OnInit {
   topics: Topic[] = [];
   pageable: Pageable;
   pageCount: number = 0;
+  href: string = '';
+  nr: string = '';
+  page: string = '';
 
   constructor(private categoryService: CategoryService, private route: ActivatedRoute) {
     this.pageable = new PageableDefault();
@@ -31,19 +34,28 @@ export class CategoryViewPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      let nr = params['nr'];
-      console.log(nr);
-      this.loadView(nr);
+      this.nr = params['nr'];
+      this.loadView(this.nr, this.page);
+    });
+    this.route.queryParams.subscribe((params) => {
+      this.page = params['page'];
+      this.loadView(this.nr, this.page);
     });
   }
 
-  loadView(nr: string) {
-    this.categoryService.view(nr).subscribe(view => {
+  loadView(nr: string, page: string) {
+    if (!nr) {
+      return;
+    }
+    if (!page) {
+      page = '0';
+    }
+    this.categoryService.view(nr, page).subscribe(view => {
+      this.href = '/category/' + nr;
       this.tree = view.categoryView.tree;
       this.topics = view.categoryView.topics;
       this.pageable = view.categoryView.pageable;
       this.pageCount = view.categoryView.pageCount;
-      console.log(view.categoryView.pageCount);
     })
   }
 
