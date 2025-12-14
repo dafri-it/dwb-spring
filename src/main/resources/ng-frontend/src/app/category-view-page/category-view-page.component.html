@@ -1,6 +1,7 @@
 <div style="display: flex">
   <app-category-tree [tree]="tree"></app-category-tree>
   <div>
+    <h2>{{title}}</h2>
     <app-topic-list [topics]="topics"></app-topic-list>
     <app-pageable [pageable]="pageable" [pageCount]="pageCount" [href]="href"></app-pageable>
   </div>

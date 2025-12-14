@@ -1,7 +1,5 @@
 <ul>
   @for (topic of topics; track topic.nr) {
-  <li>
-      {{ topic.title }}
-  </li>
+    <app-topic-list-item [topic]="topic"></app-topic-list-item>
   }
 </ul>

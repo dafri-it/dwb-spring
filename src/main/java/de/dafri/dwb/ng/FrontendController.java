@@ -3,8 +3,10 @@ package de.dafri.dwb.ng;
 import de.dafri.dwb.frontend.CategoryPageableProvider;
 import de.dafri.dwb.frontend.CategorySortLinkProvider;
 import de.dafri.dwb.ng.view.CategoryNgView;
+import de.dafri.dwb.ng.view.TopicNgView;
 import de.dafri.dwb.view.CategoryView;
 import de.dafri.dwb.view.SortLink;
+import de.dafri.dwb.view.TopicView;
 import de.dafri.dwb.view.ViewService;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +45,12 @@ public class FrontendController {
         List<SortLink> sortLinks = categorySortLinkProvider.getSortLinks(sortBy, sortOrder);
 
         return new CategoryNgView(categoryView, sortLinks);
+    }
+
+    @GetMapping("/topic/{nr}")
+    public TopicNgView topicView(@PathVariable String nr) {
+        TopicView topicView = viewService.getTopicView(nr);
+        return new TopicNgView(topicView);
     }
 
 }

@@ -27,6 +27,7 @@ export class CategoryViewPageComponent implements OnInit {
   href: string = '';
   nr: string = '';
   page: string = '';
+  title: string = '';
 
   constructor(private categoryService: CategoryService, private route: ActivatedRoute) {
     this.pageable = new PageableDefault();
@@ -52,6 +53,7 @@ export class CategoryViewPageComponent implements OnInit {
     }
     this.categoryService.view(nr, page).subscribe(view => {
       this.href = '/category/' + nr;
+      this.title = view.categoryView.category.name;
       this.tree = view.categoryView.tree;
       this.topics = view.categoryView.topics;
       this.pageable = view.categoryView.pageable;

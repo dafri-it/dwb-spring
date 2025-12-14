@@ -4,6 +4,7 @@ import {Pageable} from './pageable';
 
 export interface CategoryView {
   categoryView: {
+    category: Category,
     tree: Category[],
     topics: Topic[],
     pageable: Pageable,
