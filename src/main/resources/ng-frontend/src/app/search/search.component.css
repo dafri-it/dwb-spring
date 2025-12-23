@@ -1,0 +1,6 @@
+.search-result:open {
+  display: block;
+  position: absolute;
+  z-index: 1000;
+  border: 1px solid black;
+}

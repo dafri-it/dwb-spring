@@ -1,0 +1,16 @@
+<input type="search" name="search" [(ngModel)]="searchTerm" (input)="search()">
+
+<dialog [open]="isOpen()" class="search-result">
+  <h2>Categories</h2>
+  <ul>
+    @for (category of result.categories; track category.nr) {
+      <li><a [href]="'/category/' + category.slug">{{ category.name }}</a></li>
+    }
+  </ul>
+  <h2>Topics</h2>
+  <ul>
+    @for (topic of result.topics; track topic.nr) {
+      <li><a [href]="'/topic/' + topic.slug">{{ topic.title }}</a></li>
+    }
+  </ul>
+</dialog>
