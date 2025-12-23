@@ -5,7 +5,6 @@ import de.dafri.dwb.data.model.TopicDetailModel;
 import de.dafri.dwb.data.repository.TopicRepository;
 import de.dafri.dwb.domain.Event;
 import de.dafri.dwb.domain.TopicDetail;
-import de.dafri.dwb.exception.TopicNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class TopicDto {
     public TopicDetail getByNr(String nr) {
         TopicDetailModel model = topicRepository.findByNr(nr);
         if (model == null) {
-            throw new TopicNotFoundException(nr);
+            return null;
         }
 
         List<EventModel> eventModels = topicRepository.findEventsByTopicId(model.id());

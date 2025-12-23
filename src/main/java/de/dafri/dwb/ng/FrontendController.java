@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController()
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4321"})
 public class FrontendController {
 
     private final ViewService viewService;
@@ -35,12 +35,12 @@ public class FrontendController {
         return new CategoryNgView(categoryView, sortLinks);
     }
 
-    @GetMapping("/category/{nr}")
-    public CategoryNgView view(@PathVariable String nr,
+    @GetMapping("/category/{query}")
+    public CategoryNgView view(@PathVariable String query,
                                @RequestParam(defaultValue = "none") String sortBy,
                                @RequestParam(defaultValue = "none") String sortOrder,
                                @RequestParam(defaultValue = "0") int page) {
-        CategoryView categoryView = viewService.getCategoryView(nr, categoryPageableProvider.getPageable(sortBy, sortOrder, page));
+        CategoryView categoryView = viewService.getCategoryView(query, categoryPageableProvider.getPageable(sortBy, sortOrder, page));
 
         List<SortLink> sortLinks = categorySortLinkProvider.getSortLinks(sortBy, sortOrder);
 

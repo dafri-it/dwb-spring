@@ -16,9 +16,9 @@ public class TopicController {
         this.viewService = viewService;
     }
 
-    @GetMapping("/topic/{nr}")
-    public String topic(@PathVariable String nr, Model model) {
-        TopicView view = viewService.getTopicView(nr);
+    @GetMapping("/topic/{query}")
+    public String topic(@PathVariable String query, Model model) {
+        TopicView view = viewService.getTopicView(query);
         model.addAttribute("view", view);
         return "topic-details";
     }
