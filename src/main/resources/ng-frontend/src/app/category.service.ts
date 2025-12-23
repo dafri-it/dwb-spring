@@ -15,7 +15,7 @@ export class CategoryService {
     return this.http.get<CategoryView>("http://localhost:8080/api/index");
   }
 
-  view(nr: string, page: string): Observable<CategoryView> {
-    return this.http.get<CategoryView>(`http://localhost:8080/api/category/${nr}?page=${page}`);
+  view(query: string, page: string): Observable<CategoryView> {
+    return this.http.get<CategoryView>(`http://localhost:8080/api/category/${query}?page=${page}`);
   }
 }

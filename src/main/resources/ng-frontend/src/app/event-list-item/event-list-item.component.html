@@ -1,0 +1,10 @@
+<li>
+  <a [href]="'/event-register/' + event.nr">{{ event.nr }}</a>
+
+  @if (event.end) {
+    ({{ event.begin }} - {{ event.end }})
+  } @else {
+    ({{ event.begin }})
+  }
+  {{ event.place }}
+</li>

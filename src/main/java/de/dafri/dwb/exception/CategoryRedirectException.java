@@ -8,12 +8,18 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class CategoryRedirectException extends RuntimeException {
 
     private final Category category;
+    private final boolean api;
 
-    public CategoryRedirectException(Category category) {
+    public CategoryRedirectException(Category category, boolean api) {
         this.category = category;
+        this.api = api;
     }
 
     public Category getCategory() {
         return category;
+    }
+
+    public boolean isApi() {
+        return api;
     }
 }

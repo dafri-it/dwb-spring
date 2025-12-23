@@ -15,7 +15,7 @@ public class Slugger {
                 ;
 
         replaced = replaced.trim();
-        replaced = replaced.replaceAll("  ", " ").replaceAll("  ", " ").replaceAll("  ", " ");
+        replaced = replaced.replaceAll(" {2}", " ").replaceAll(" {2}", " ").replaceAll(" {2}", " ");
         replaced = replaced.replaceAll(" ", "-");
 
         return replaced;

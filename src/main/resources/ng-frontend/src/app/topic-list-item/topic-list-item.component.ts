@@ -9,6 +9,4 @@ import {Topic} from '../topic';
 })
 export class TopicListItemComponent {
   @Input() topic!: Topic;
-
-  protected readonly top = top;
 }

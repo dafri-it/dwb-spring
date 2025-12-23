@@ -1,12 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Pageable} from '../pageable';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 
 
 @Component({
   selector: 'app-pageable',
   imports: [
-    RouterLink
   ],
   templateUrl: './pageable.component.html',
   styleUrl: './pageable.component.css'
@@ -15,13 +13,6 @@ export class PageableComponent {
 
   @Input()
   href: string = '';
-
-  constructor() {
-  }
-  //
-  // ngOnInit(): void {
-  //   this.route.url.subscribe((x) => this.href = "/" + x.join("/"));
-  // }
 
   @Input()
   pageable: Pageable = {

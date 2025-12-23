@@ -21,7 +21,11 @@ public class GlobalExceptionHandler {
 
         String currentUrl = ServletUriComponentsBuilder.fromCurrentRequest().toUriString();
 
-        log.info("redirecting from {} to category {}", currentUrl, category.slug());
+        log.info("redirecting from {} to category {} (api={})", currentUrl, category.slug(), ex.isApi());
+
+        if (ex.isApi()) {
+            return "redirect:/api/category/" + category.slug();
+        }
         return "redirect:/category/" + category.slug();
     }
 
@@ -31,7 +35,12 @@ public class GlobalExceptionHandler {
 
         String currentUrl = ServletUriComponentsBuilder.fromCurrentRequest().toUriString();
 
-        log.info("redirecting from {} to topic {}", currentUrl, topicDetail.slug());
+        log.info("redirecting from {} to topic {} (api={})", currentUrl, topicDetail.slug(), ex.isApi());
+
+        if (ex.isApi()) {
+            return "redirect:/api/topic/" + topicDetail.slug();
+        }
+
         return "redirect:/topic/" + topicDetail.slug();
     }
     

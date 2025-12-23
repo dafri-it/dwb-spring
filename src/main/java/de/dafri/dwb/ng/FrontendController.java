@@ -8,6 +8,7 @@ import de.dafri.dwb.view.CategoryView;
 import de.dafri.dwb.view.SortLink;
 import de.dafri.dwb.view.TopicView;
 import de.dafri.dwb.view.ViewService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -40,16 +41,17 @@ public class FrontendController {
                                @RequestParam(defaultValue = "none") String sortBy,
                                @RequestParam(defaultValue = "none") String sortOrder,
                                @RequestParam(defaultValue = "0") int page) {
-        CategoryView categoryView = viewService.getCategoryView(query, categoryPageableProvider.getPageable(sortBy, sortOrder, page));
+        Pageable pageable = categoryPageableProvider.getPageable(sortBy, sortOrder, page);
+        CategoryView categoryView = viewService.getCategoryView(query, pageable, true);
 
         List<SortLink> sortLinks = categorySortLinkProvider.getSortLinks(sortBy, sortOrder);
 
         return new CategoryNgView(categoryView, sortLinks);
     }
 
-    @GetMapping("/topic/{nr}")
-    public TopicNgView topicView(@PathVariable String nr) {
-        TopicView topicView = viewService.getTopicView(nr);
+    @GetMapping("/topic/{query}")
+    public TopicNgView topicView(@PathVariable String query) {
+        TopicView topicView = viewService.getTopicView(query, true);
         return new TopicNgView(topicView);
     }
 

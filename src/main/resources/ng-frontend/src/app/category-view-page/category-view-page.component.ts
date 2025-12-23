@@ -4,7 +4,7 @@ import {CategoryService} from '../category.service';
 import {Topic} from '../topic';
 import {CategoryTreeComponent} from '../category-tree/category-tree.component';
 import {TopicListComponent} from '../topic-list/topic-list.component';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {PageableComponent} from '../pageable/pageable.component';
 import {Pageable, PageableDefault} from '../pageable';
 
@@ -25,34 +25,41 @@ export class CategoryViewPageComponent implements OnInit {
   pageable: Pageable;
   pageCount: number = 0;
   href: string = '';
-  nr: string = '';
+  query: string = '';
   page: string = '';
   title: string = '';
 
-  constructor(private categoryService: CategoryService, private route: ActivatedRoute) {
+  constructor(
+    private categoryService: CategoryService,
+    private currentRoute: ActivatedRoute,
+    private router: Router) {
     this.pageable = new PageableDefault();
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
-      this.nr = params['nr'];
-      this.loadView(this.nr, this.page);
+    this.currentRoute.params.subscribe((params) => {
+      this.query = params['query'];
+      this.loadView(this.query, this.page);
     });
-    this.route.queryParams.subscribe((params) => {
+    this.currentRoute.queryParams.subscribe((params) => {
       this.page = params['page'];
-      this.loadView(this.nr, this.page);
+      this.loadView(this.query, this.page);
     });
   }
 
-  loadView(nr: string, page: string) {
-    if (!nr) {
+  loadView(query: string, page: string) {
+    if (!query) {
       return;
     }
     if (!page) {
       page = '0';
     }
-    this.categoryService.view(nr, page).subscribe(view => {
-      this.href = '/category/' + nr;
+    this.categoryService.view(query, page).subscribe(view => {
+      if (query !== view.categoryView.category.slug) {
+        this.router.navigate(['/category', view.categoryView.category.slug]);
+        return;
+      }
+      this.href = '/category/' + view.categoryView.category.slug;
       this.title = view.categoryView.category.name;
       this.tree = view.categoryView.tree;
       this.topics = view.categoryView.topics;

@@ -40,7 +40,7 @@ public class ViewService {
         return new CategoryView(tree, null, List.of(), null, 0);
     }
 
-    public CategoryView getCategoryView(String query, Pageable pageable) {
+    public CategoryView getCategoryView(String query, Pageable pageable, boolean api) {
         List<CategoryTreeViewItem> tree = getTree();
         Category category = categoryDto.getCategoryByNr(query);
 
@@ -57,7 +57,7 @@ public class ViewService {
         }
 
         if (!category.slug().equals(query)) {
-            throw new CategoryRedirectException(category);
+            throw new CategoryRedirectException(category, api);
         }
 
         List<Topic> topics = categoryDto.getTopics(category);
@@ -123,7 +123,7 @@ public class ViewService {
         return new CategoryView(tree, toTreeItem(category), pagedTopics, pageable, pageCount);
     }
 
-    public TopicView getTopicView(String query) {
+    public TopicView getTopicView(String query, boolean api) {
         TopicDetail topicDetail = topicDto.getByNr(query);
 
         if (topicDetail == null) {
@@ -140,11 +140,11 @@ public class ViewService {
         }
 
         if (!topicDetail.slug().equals(query)) {
-            throw new TopicRedirectException(topicDetail);
+            throw new TopicRedirectException(topicDetail, api);
         }
 
         List<EventViewItem> events = topicDetail.events().stream().map(this::toEventItem).toList();
-        return new TopicView(getTree(), topicDetail.nr(), topicDetail.title(), topicDetail.description(), topicDetail.text(), events);
+        return new TopicView(getTree(), topicDetail.nr(), topicDetail.title(), topicDetail.description(), topicDetail.text(), events, topicDetail.slug());
     }
 
     private List<CategoryTreeViewItem> getTree() {

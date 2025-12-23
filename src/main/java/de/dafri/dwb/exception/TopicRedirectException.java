@@ -8,12 +8,18 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class TopicRedirectException extends RuntimeException {
 
     private final TopicDetail topicDetail;
+    private final boolean api;
 
-    public TopicRedirectException(TopicDetail topicDetail) {
+    public TopicRedirectException(TopicDetail topicDetail, boolean api) {
         this.topicDetail = topicDetail;
+        this.api = api;
     }
 
     public TopicDetail getTopicDetail() {
         return topicDetail;
+    }
+
+    public boolean isApi() {
+        return api;
     }
 }

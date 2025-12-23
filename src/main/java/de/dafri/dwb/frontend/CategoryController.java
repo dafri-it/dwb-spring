@@ -48,7 +48,7 @@ public class CategoryController {
 
         List<SortLink> sortLinks = categorySortLinkProvider.getSortLinks(sortBy, sortOrder);
 
-        CategoryView view = viewService.getCategoryView(nr, pageable);
+        CategoryView view = viewService.getCategoryView(nr, pageable, false);
         model.addAttribute("view", view);
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("sortOrder", sortOrder);

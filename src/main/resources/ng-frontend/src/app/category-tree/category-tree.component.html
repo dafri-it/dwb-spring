@@ -1,10 +1,10 @@
 <h1>Tree</h1>
 <ul>
   @for (category of tree; track category.nr) {
-    <li><a [routerLink]="'/category/' + category.nr">{{ category.name }}</a>
+    <li><a [routerLink]="'/category/' + category.slug">{{ category.name }}</a>
       <ul>
         @for (child of category.children; track child.nr) {
-          <li><a [routerLink]="'/category/' + child.nr">{{ child.name }}</a></li>
+          <li><a [routerLink]="'/category/' + child.slug">{{ child.name }}</a></li>
         }
       </ul>
     </li>
