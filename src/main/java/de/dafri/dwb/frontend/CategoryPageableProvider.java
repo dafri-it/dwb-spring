@@ -16,22 +16,15 @@ public class CategoryPageableProvider {
             return false;
         }
 
-        if (!List.of(SortToggle.NONE, SortToggle.ASCENDING, SortToggle.DESCENDING).contains(sortOrder)) {
-            return false;
-        }
-
-        return true;
+        return List.of(SortToggle.NONE, SortToggle.ASCENDING, SortToggle.DESCENDING).contains(sortOrder);
     }
 
     public Pageable getPageable(String sortBy, String sortOrder, int page) {
-        Pageable pageable;
-        if (!"none".equals(sortBy) && !"none".equals(sortOrder)) {
-            Sort.Direction direction = ("asc".equals(sortOrder)) ? Sort.Direction.ASC : Sort.Direction.DESC;
-            pageable = PageRequest.of(page, 10).withSort(direction, sortBy);
-        } else {
-            pageable = PageRequest.of(page, 10);
+        if ("none".equals(sortBy) || "none".equals(sortOrder)) {
+            return PageRequest.of(page, 10);
         }
-        return pageable;
+        Sort.Direction direction = ("asc".equals(sortOrder)) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        return PageRequest.of(page, 10).withSort(direction, sortBy);
     }
 
 }

@@ -1,7 +1,7 @@
 package de.dafri.dwb.view;
 
-import de.dafri.dwb.data.TopicDto;
 import de.dafri.dwb.data.CategoryDto;
+import de.dafri.dwb.data.TopicDto;
 import de.dafri.dwb.domain.Category;
 import de.dafri.dwb.domain.Event;
 import de.dafri.dwb.domain.Topic;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ViewService {
@@ -70,14 +71,8 @@ public class ViewService {
 
         if (byName != null) {
             viewItems = topics.stream()
-                    .sorted((o1, o2) -> {
-                                if (byName.isAscending()) {
-                                    return o1.title().compareTo(o2.title());
-                                } else {
-                                    return o2.title().compareTo(o1.title());
-                                }
-                            }
-                    ).map(this::toTopicItem)
+                    .sorted((o1, o2) -> byName.isAscending() ? o1.title().compareTo(o2.title()) : o2.title().compareTo(o1.title()))
+                    .map(this::toTopicItem)
                     .toList();
         } else if (byDate != null || byPlace != null) {
             List<TopicEventItem> topicEventItems = new ArrayList<>();
@@ -93,17 +88,9 @@ public class ViewService {
                     .filter(ei -> ei.eventNr() != null)
                     .sorted((o1, o2) -> {
                         if (byDate != null) {
-                            if (byDate.isAscending()) {
-                                return o1.begin().compareTo(o2.begin());
-                            } else {
-                                return o2.begin().compareTo(o1.begin());
-                            }
+                            return byDate.isAscending() ? o1.begin().compareTo(o2.begin()) : o2.begin().compareTo(o1.begin());
                         } else {
-                            if (byPlace.isAscending()) {
-                                return o1.place().compareTo(o2.place());
-                            } else {
-                                return o2.place().compareTo(o1.place());
-                            }
+                            return byPlace.isAscending() ? o1.place().compareTo(o2.place()) : o2.place().compareTo(o1.place());
                         }
                     })
                     .map(this::toTopicItem)
@@ -118,7 +105,6 @@ public class ViewService {
         int pageCount = (int) Math.ceil((double) total / (double) pageable.getPageSize());
 
         List<TopicListViewItem> pagedTopics = viewItems.stream().skip(pageable.getOffset()).limit(pageable.getPageSize()).toList();
-
 
         return new CategoryView(tree, toTreeItem(category), pagedTopics, pageable, pageCount);
     }
@@ -152,11 +138,11 @@ public class ViewService {
     }
 
     private TopicListViewItem toTopicItem(Topic topic) {
-        return new TopicListViewItem(topic.nr(), topic.title(), topic.subtitle(), topic.slug(), topic.description(), topic.events().stream().map(this::toEventItem).toList());
+        return new TopicListViewItem(UUID.randomUUID(), topic.nr(), topic.title(), topic.subtitle(), topic.slug(), topic.description(), topic.events().stream().map(this::toEventItem).toList());
     }
 
     private TopicListViewItem toTopicItem(TopicEventItem tei) {
-        return new TopicListViewItem(tei.topicNr(), tei.title(), tei.subtitle(), Slugger.slug(tei.title()), tei.description(), List.of(new EventViewItem(tei.eventNr(), tei.begin(), tei.end(), tei.place())));
+        return new TopicListViewItem(UUID.randomUUID(), tei.topicNr(), tei.title(), tei.subtitle(), Slugger.slug(tei.title()), tei.description(), List.of(new EventViewItem(tei.eventNr(), tei.begin(), tei.end(), tei.place())));
     }
 
     private EventViewItem toEventItem(Event event) {

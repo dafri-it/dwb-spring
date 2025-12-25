@@ -4,16 +4,19 @@ import {CategoryService} from '../category.service';
 import {Topic} from '../topic';
 import {CategoryTreeComponent} from '../category-tree/category-tree.component';
 import {TopicListComponent} from '../topic-list/topic-list.component';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {PageableComponent} from '../pageable/pageable.component';
 import {Pageable, PageableDefault} from '../pageable';
+import {SortableComponent} from '../sortable/sortable.component';
+import {SortLink} from '../sort-link';
 
 @Component({
   selector: 'app-category-view-page',
   imports: [
     CategoryTreeComponent,
     TopicListComponent,
-    PageableComponent
+    PageableComponent,
+    SortableComponent
   ],
   templateUrl: './category-view-page.component.html',
   styleUrl: './category-view-page.component.css'
@@ -26,8 +29,9 @@ export class CategoryViewPageComponent implements OnInit {
   pageCount: number = 0;
   href: string = '';
   query: string = '';
-  page: string = '';
+  queryParams!: Params;
   title: string = '';
+  sortLinks: SortLink[] = [];
 
   constructor(
     private categoryService: CategoryService,
@@ -39,32 +43,30 @@ export class CategoryViewPageComponent implements OnInit {
   ngOnInit(): void {
     this.currentRoute.params.subscribe((params) => {
       this.query = params['query'];
-      this.loadView(this.query, this.page);
+      this.loadView(this.query, this.queryParams);
     });
-    this.currentRoute.queryParams.subscribe((params) => {
-      this.page = params['page'];
-      this.loadView(this.query, this.page);
+    this.currentRoute.queryParams.subscribe((queryParams) => {
+      this.queryParams = queryParams;
+      this.loadView(this.query, this.queryParams);
     });
   }
 
-  loadView(query: string, page: string) {
+  loadView(query: string, queryParams: Params) {
     if (!query) {
       return;
     }
-    if (!page) {
-      page = '0';
-    }
-    this.categoryService.view(query, page).subscribe(view => {
+    this.categoryService.view(query, queryParams).subscribe(view => {
+      this.href = '/category/' + view.categoryView.category.slug;
       if (query !== view.categoryView.category.slug) {
-        this.router.navigate(['/category', view.categoryView.category.slug]);
+        this.router.navigate([this.href]);
         return;
       }
-      this.href = '/category/' + view.categoryView.category.slug;
       this.title = view.categoryView.category.name;
       this.tree = view.categoryView.tree;
       this.topics = view.categoryView.topics;
       this.pageable = view.categoryView.pageable;
       this.pageCount = view.categoryView.pageCount;
+      this.sortLinks = view.sortLinks;
     })
   }
 

@@ -1,0 +1,6 @@
+<ul>
+  @for (link of sortLinks; track link.link) {
+    <li><a [routerLink]="href" [queryParams]="params(link)">{{ link.title }} {{ link.direction }}</a>
+    </li>
+  }
+</ul>

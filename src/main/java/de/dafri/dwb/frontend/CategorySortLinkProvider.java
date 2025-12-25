@@ -21,16 +21,13 @@ public class CategorySortLinkProvider {
 
     private SortLink createLink(SortToggle current, SortToggle newValue, String title) {
         return new SortLink("?sortBy=" + newValue.sortBy() + "&sortOrder=" + newValue.sortOrder(),
-                title, getDirection(current, newValue));
+                title, getDirection(current, newValue), newValue.sortBy(), newValue.sortOrder());
     }
 
     private String getDirection(SortToggle current, SortToggle newValue) {
         if (current.sortBy().equals(newValue.sortBy())) {
             return current.sortOrder();
-        } else {
-            return SortToggle.NONE;
         }
+        return SortToggle.NONE;
     }
-
-
 }

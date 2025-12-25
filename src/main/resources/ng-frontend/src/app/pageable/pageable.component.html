@@ -1,13 +1,13 @@
 <div style="display: flex;gap: 10px">
   @if (previous) {
-    <a [href]="href + '?page=' + previous">previous</a>
+    <a [routerLink]="href" [queryParams]="previousParams">previous</a>
   }
 
   @for (page of pages; track $index) {
-    <a [href]="href + '?page=' + page">{{ $index + 1 }}</a>
+    <a [routerLink]="href" [queryParams]="pageParams(page)">{{ $index + 1 }}</a>
   }
 
   @if (next) {
-    <a [href]="href + '?page=' + next">next</a>
+    <a [routerLink]="href" [queryParams]="nextParams">next</a>
   }
 </div>

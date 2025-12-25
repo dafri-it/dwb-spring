@@ -1,5 +1,5 @@
 <li>
-  <a [href]="'/event-register/' + event.nr">{{ event.nr }}</a>
+  <a [routerLink]="'/event-register/' + event.nr">{{ event.nr }}</a>
 
   @if (event.end) {
     ({{ event.begin }} - {{ event.end }})

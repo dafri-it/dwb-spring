@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {SearchService} from '../search.service';
 import {SearchResult} from '../search-result';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-search',
   imports: [
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
@@ -29,6 +31,19 @@ export class SearchComponent {
  }
 
  isOpen() {
-    return this.result.topics.length > 0 || this.result.categories.length > 0;
+    if (!this.result) {
+      return false;
+    }
+    if (!this.result.categories) {
+      return false;
+    }
+    if (!this.result.topics) {
+      return false;
+    }
+    return !(this.result.categories.length === 0 && this.result.topics.length === 0);
  }
+
+  close() {
+
+  }
 }

@@ -1,10 +1,11 @@
 import {Component, Input} from '@angular/core';
 import {Pageable} from '../pageable';
-
+import {Params, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-pageable',
   imports: [
+    RouterLink
   ],
   templateUrl: './pageable.component.html',
   styleUrl: './pageable.component.css'
@@ -27,6 +28,7 @@ export class PageableComponent {
 
   @Input()
   pageCount = 0;
+  @Input() params!: Params;
 
   get previous(): string | null {
     if (this.pageable.pageNumber === 0) {
@@ -48,5 +50,17 @@ export class PageableComponent {
       res.push(i);
     }
     return res;
+  }
+
+  get nextParams() {
+    return {...this.params, page: this.next};
+  }
+
+  get previousParams() {
+    return {...this.params, page: this.previous};
+  }
+
+  pageParams(page: number) {
+    return {...this.params, page: page.toString()};
   }
 }

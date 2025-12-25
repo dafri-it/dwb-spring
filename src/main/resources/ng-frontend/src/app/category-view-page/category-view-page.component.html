@@ -2,7 +2,8 @@
   <app-category-tree [tree]="tree"></app-category-tree>
   <div>
     <h2>{{title}}</h2>
+    <app-sortable [href]="href" [pageable]="pageable" [sortLinks]="sortLinks" [queryParams]="queryParams"></app-sortable>
     <app-topic-list [topics]="topics"></app-topic-list>
-    <app-pageable [pageable]="pageable" [pageCount]="pageCount" [href]="href"></app-pageable>
+    <app-pageable [pageable]="pageable" [pageCount]="pageCount" [href]="href" [params]="queryParams"></app-pageable>
   </div>
 </div>

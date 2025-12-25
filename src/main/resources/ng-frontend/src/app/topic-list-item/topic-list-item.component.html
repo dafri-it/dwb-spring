@@ -1,3 +1,9 @@
 <li>
-  <a [href]="'topic/' + topic.slug">{{topic.title}}</a>
+  <a [href]="'topic/' + topic.slug">{{ topic.title }}</a>
+  <br>
+  <ul>
+  @for (event of topic.events; track event.nr) {
+    <li>{{ event.nr }} {{ event.begin }} {{ event.end }} {{ event.place }}<a href="event-register/{{ event.nr }}">Details</a></li>
+  }
+  </ul>
 </li>

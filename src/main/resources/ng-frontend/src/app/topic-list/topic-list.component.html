@@ -1,5 +1,5 @@
 <ul>
-  @for (topic of topics; track topic.nr) {
+  @for (topic of topics; track topic.uuid) {
     <app-topic-list-item [topic]="topic"></app-topic-list-item>
   }
 </ul>
