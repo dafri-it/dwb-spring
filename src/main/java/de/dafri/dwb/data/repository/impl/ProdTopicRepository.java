@@ -19,6 +19,21 @@ public class ProdTopicRepository implements TopicRepository {
     }
 
     @Override
+    public List<TopicDetailModel> findAll() {
+        return jdbcTemplate.query(
+                "SELECT ID, nr, name, beschrLang, description, beschrAusf FROM thema",
+                (rs, i) -> new TopicDetailModel(
+                        rs.getLong("ID"),
+                        rs.getString("nr"),
+                        rs.getString("name"),
+                        rs.getString("beschrLang"),
+                        rs.getString("description"),
+                        rs.getString("beschrAusf")
+                )
+        );
+    }
+
+    @Override
     public TopicDetailModel findByNr(String nr) {
         return jdbcTemplate.query(
                 "SELECT ID, nr, name, beschrLang, description, beschrAusf FROM thema WHERE nr = :nr",

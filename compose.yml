@@ -1,0 +1,13 @@
+services:
+  db:
+    image: mariadb
+    environment:
+      - MYSQL_USER=dwb
+      - MYSQL_DATABASE=dwb
+      - MYSQL_PASSWORD=dwb
+      - MYSQL_ROOT_PASSWORD=dwb
+    volumes:
+      - ./dumps:/docker-entrypoint-initdb.d/
+    ports:
+      - "3306:3306"
+    restart: always

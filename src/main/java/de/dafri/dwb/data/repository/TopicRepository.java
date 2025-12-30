@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface TopicRepository {
 
+    List<TopicDetailModel> findAll();
+
     TopicDetailModel findByNr(String nr);
 
     List<EventModel> findEventsByTopicId(Long id);

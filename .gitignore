@@ -34,3 +34,5 @@ build/
 
 ### JTE ###
 /jte-classes/
+/src/main/resources/static/topics/
+/dumps/dwb.sql
